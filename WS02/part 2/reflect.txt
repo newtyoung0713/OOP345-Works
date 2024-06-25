@@ -1,0 +1,135 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #2 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+1. the reason for the significant time difference between the copy and move operations
+Ans: 
+For copy constructor (CC) and copy assignment operator (CA), 
+we have to allocate a new memory for the new object to store data.
+Moreover, we need to copy many data one on one from A object to the new object 
+and it is spending a lot of time to do.
+However, move constructor (MC) and move assignment (MA) operator do not need to allocate a new memory for the new object.
+We can just using std::move function moving the data from A object to the another one.
+Furthermore, the MC can save the source of memory and time for the program 
+because of we do not need to move all the data or we just move some pointers.
+To summary, why MC and MA can save time better than CC and CA,
+all based on the reasons are:
+- Allocate and free memory
+- Data copying
+- Source management
+
+2. retrieve records from a text file using an input file stream object
+Ans:
+I learned it from OOP244 the workshop-6, 
+and used std::getline to retrieve data from the text file from the workshop-1.
+Iteration the std::getline with while loop to increment the number of string and get string into the array like:
+
+        while (std::getline(import, line)) {
+          if (line[0] == '>') ++m_numOfString;
+        }
+and 
+        while (std::getline(import, line)) {
+          if (line[0] == '>') {
+            if (index > 0) {
+              m_dbString[index - 1] = sequence;
+              sequence.clear();
+            }
+            index++;
+          } else {
+            sequence += line;
+          }
+        }
+
+3. count the number of records in a text file
+Ans:
+Used two while loop to count it because I have no idea how many records in the text file.
+Determination the number of records by the first while loop,
+used it for counting how many number of string are in the text file,
+as the first answer showed.
+
+4. monitor the time spent on a particular task using the std::chrono library
+Ans:
+To monitor the spending time for CC, CA, MC and MA by std::chrono,
+I have to include the library with
+#include <chrono>
+then used the syntax that the website and the instruction showed.
+After that, the code from w2_p1 and w2_p2 will show the start time and the end time
+for CC, CA, MC and MA
+and we can see what are the nanoseconds they spent after executed.
+
+5. implement copy semantics for a class with a resource
+Ans:
+In this workshop, I implemented for CC with the following code:
+
+        On the initialization list: m_numOfString(0), m_dbString(nullptr)
+        In the code block: *this = uneAutre;
+
+I think this CC is similar with the code before we did the workshop in OOP244.
+However, for the CC, I just coded it simpler than before.
+
+6. implement move semantics for a class with a resource
+Ans:
+In this workshop, I implemented for MC with the following code:
+
+        On the initialization list: m_numOfString(0), m_dbString(nullptr)
+        In the code block: *this = std::move(uneAutre);
+
+For CC and MC, the different is about the code in the code block that I used std::move(uneAutre) instead of uneAutre.
+
+7. identify the processing-intensive operations in copy and move assignments
+Ans:
+CA:
+        if (this != &uneAutre) {
+          setEmpty();
+          if (uneAutre.m_numOfString != 0) {
+            m_numOfString = uneAutre.m_numOfString;
+            m_dbString = new std::string[m_numOfString];
+            for (auto i = 0u; i < m_numOfString; ++i)
+              m_dbString[i] = uneAutre.m_dbString[i];
+          }
+        }
+        return *this;
+
+MA:
+        if (this != &uneAutre) {
+          setEmpty();
+          m_numOfString = uneAutre.m_numOfString;
+          m_dbString = uneAutre.m_dbString;
+          uneAutre.m_dbString = nullptr;
+          uneAutre.m_numOfString = 0;
+        }
+        return *this;
+
+For CA and MA, I did not need to use for loop to copy each data to another object.
+I could just move it to another one.
+Also, I did not need to allocate a new memory to the origin object for copy assignment.
+I think these two are the difference between CC and CA with MC and MA.
+
+---
+
+2. How move constructor (MC) and move assignment (MA) faster than copy constructor (CC) and copy assignment operator (CA)
+Ans:
+AS the first answer mentioned,
+the code for MC is:
+  *this = std::move(uneAutre);
+and the code for MA is:
+  if (this != &uneAutre) {
+    setEmpty();
+    m_numOfString = uneAutre.m_numOfString;
+    m_dbString = uneAutre.m_dbString;
+    uneAutre.m_dbString = nullptr;
+    uneAutre.m_numOfString = 0;
+  }
+  return *this;
+
+We do not need to allocate the memory and use strcpy or c_str and length function to check the length of the variable.
