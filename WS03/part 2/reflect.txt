@@ -1,0 +1,122 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #3 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+- design and code a class template
+- template a class variable
+- specialize a templated class variable for a particular type
+- instantiate a template class
+- specialize a member function of a templated class to process a particular type
+- derive a templated class from another templated class
+-----
+
+1. What is the reason for defining the class objects outside the class definition?
+Ans:
+  The reason is for the programmer to maintain and to modify the program easily.
+  Because if we combine the class objects and the class definition in one header file,
+  the code will be mess and massive,
+  then this action cause the problems as following:
+  1. Security: It is not safe, and conflict with one of the concepts of OOP, encapsulation.
+  2. Compiling time: If everything coding in header file, then when compiling,
+                     the compiler has to compile the prototypes and the code every time.
+                     However, if we separate both, then the compiler only executes the prototypes,
+                     but no coding part; therefore, it can safe the time for compiling.
+  3. Effect: As beginning, if we separate the prototypes and the coding part,
+             the code will be easy to understand and easy to maintain.
+             Moreover, can help the programmer codes the program effectively.
+
+2. What is the reason for specializing the definition of m_smallestItem 
+   and m_largestItem objects for Book and 10.
+Ans:
+  I think the reason is for we can store maximum 10 Book data into the m_smallestItem and m_largestItem.
+  This specializing can help us to define the objects with the right value we want.
+  Therefore, the code will be easy maintaining.
+  Also, we can define both objects are all with Book type,
+  and this type is the TYPENAME T from the syntax of template of "template<typename T>"
+
+3. m_smallestItem and m_largestItem objects are also initialized for Book and 72. 
+   Is this initialization necessary? Why?
+Ans:
+  In this workshop, this initialization is unnecessary because of the data is less than 72.
+  However, if the data is more than 10 and less than 72,
+  then this initialization with Book and 72 will be useful for this program,
+  otherwise, we just make the number as big as 72 and nothing different.
+
+4. answers to the other questions in these specifications.
+  4-1. Why the definitions and implementations in this case should be included in header file? 
+        Are there ways to work around and include implementation in .cpp files?
+  Ans:
+			TEMPLATE is a general coding technology for different data type.
+			When we define a class with template, we should both define and implement in header file,
+			then it will be easy to implement for different data type and catch the entirely information.
+
+			However, if we want to implement in .cpp files, there are two ways.
+			First, we have to separate the TEMPLATE class to .tpp files,
+			then we can code the template as "TEMPLATE CLASS className<dataType>;"
+			Second, using the keyword, inline, before the data type of functions,
+			then we can code the functions in .cpp files as
+			"inline dataType className::function(parameter p, ...)" 
+
+  4-2. Why it was necessary for you to add the members that you added into the Book class.
+	Ans:
+	 		If we use std::to_string in Book class, we can make any number as a string,
+			then when use std::string with std::string::operator+(),
+			we can make numbers and strings in the same output.
+			Otherwise, it will be hard to output number and string at the same time.
+			Therefore, it was necessary to add std::to_string and std::string::operator+().
+			Moreover, std::to_string is included in std::string.
+			So I think std::string is mandatory to use,
+			but I did not use std::string::operator+=() in Book class,
+			then I think it was not necessary to use.
+
+	4-3. Why these functions cannot be querries, even though they do not change value.
+	Ans:
+			1. setSmallestItem(): This function will change the value, so it can not be querries.
+			2. setLargestItem(): It is the same as setSmallestItem
+	 		3. T getSmallestItem(): This function will only return value, so it can be querries
+			4. T getLargestItem(): It is the same as T getSmallestItem
+			The reason why even though the function does not change value, it still can not be querries
+			because...
+				1. Side effect
+				2. The complexity of the logical
+				3. Concurrency issues
+				4. Design Principles
+
+	4-4. If we can make this function a query or not (do an experiment and discuss your results).
+	Ans:
+			We can make this operator[]() function a query and also a modifier,
+			just need to use CONST for the function,
+			as "int& operator[](int index)" and "const int& operator[](int index) const",
+			or using TEMPLATE instead of,
+			such as "T& operator[](int index)" and "const T& operator[](int index) const".
+			Then when we want to change the value or just query the value,
+			the compiler will choose the right one and executing the result to us.
+
+	4-5.
+	Ans:
+			When we design and code the program with template by the syntax of template<typename T>,
+      template<typename T, unsigned C>, or template<typename T, ...>,
+      means that we can have one general type for many types,
+      such as in this workshop, the TYPENAME T can be the object of Book.
+      Moreover, the UNSIGNED C can be int or double,
+      then we can just design once, and code in many functions.
+	4-6.
+	Ans:
+			If we want to use inheritance for the derive class from base TEMPLATE class,
+			that we have to define the derive class with the same TEMPLATE,
+			and if we want to have more TEMPLATE,
+			we can add more,
+			otherwise, we just keep the same TEMPLATE for the derive class as:
+			"template <typename T>
+			 class derive : public base<T>"
