@@ -1,0 +1,102 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #4 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+- design and code composition and aggregation class relationships
+use member functions of the string class to parse a string into tokens based on simple rules
+- design and code a class that manages a dynamically allocated array of pointers to objects
+-----
+
+1. the difference between the implementations of a composition and an aggregation.
+Ans:
+    From this workshop-4 and getting a reference from classes of Restaurant and ConfirmationSender.
+    For composition:
+        class Restaurant {
+          Reservation m_reserve[10];
+          size_t m_cnt;
+        };
+    In this case, the object of Reservation is rely on the class of Restaurant;
+    therefore, when the class of Restaurant is deleted, and the object of Reservation will not exist,
+    so it means this is an example of composition.
+
+    For aggregation:
+        class Restaurant {
+          const Reservation** m_reserve;
+          size_t m_cnt;
+        };
+    But in this case, the object of Reservation is independent in the class of Restaurant,
+    so when the class of Restaurant is deleted,
+    the object of Reservation will still exist;
+    therefore, it means this is an example of aggregation.
+
+2. the difference between the implementations of move and copy functions in a composition and an aggregation.
+Ans:
+    The composition is about the object(s) is apart of another object.
+    The copy function in a composition is only copy the sub-object
+    and the move function transfers the ownership and the sources.
+
+    For the aggregation is about the objects are all independent, they will not rely on any another object.
+    The copy function in an aggregation just need to copy pointer and reference not the object
+    and the move function only transfers the ownership for the pointer and reference.
+
+    Therefore, in a composition, both functions are about coping and moving the object(s) only
+    and in an aggregation, both functions are about coping and moving by pointer or reference.
+
+3. use member functions of the string class to parse a string into tokens based on simple rules
+Ans:
+    From member functions of the string class, we have to use the following:
+    std::string::substr()
+    std::string::find()
+    std::string::erase()
+    std::stoi()
+    and each function means:
+    std::string::substr() : prtending there are two parameters, A and B
+                            defaulting A as 0 if did not assign a number to A,
+                            then extract the character from A position to B position
+    std::string::find() : find the character in a string
+    std::string::erase() : delete the character in the string
+    std::stoi() : switch string to int
+
+    In this workshop,
+    m_name = temp.substr(0, temp.find(','));
+      the program extract the character from 0 to the next ","
+    m_name.erase(0, m_name.find_first_not_of(' '));
+      clean the whitespace from the position 0 to the first character of the string m_name
+    m_name.erase(m_name.find_last_not_of(' ') + 1);
+      clean the whitespace before the "," to the last character of the string m_name
+    temp.erase(0, temp.find(',') + 1);
+      The parameter string is a const, so it can not be changed,
+      therefore, used temp to copy the string from the source string,
+      then clean the temp string for extracting the next string until the symbol ","
+
+4. design and code a class that manages a dynamically allocated array of pointers to objects
+Ans:
+    For this question, based on the code:
+    const Reservation** m_reserve,
+    m_reserve is a pointer to point a const Reservation point object.
+    Therefore, when we want to dynamic allocate,
+    it will be kind of as normal syntax:
+    for (size_t i = 0; i < size; ++i) m_reserve[i] = new Reservation[i];
+    and we have to make it as :
+    for (size_t i = 0; i < size; ++i) m_reserve[i] = new const Reservation*[i];
+
+5. Move constructor
+Ans:
+    I had problem based on I did not initial the variables on the initialization list.
+    Only call the std::move() function in MC.
+    Therefore, I had memory leak for a long time.
+    I checked many times,
+    Searched on Google, but did not solve the problem.
+    Finally, I asked ChatGPT, and saw the initialization list,
+    and just knew I did not initial the variables on there.
