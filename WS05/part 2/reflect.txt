@@ -1,0 +1,157 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #5 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+- design and code a templated class that allocates and deallocates dynamic memory
+- design and code a function object
+- design and code a lambda expression
+code a member function that receives the address of a callback function to execute
+- throw exceptions of different types
+- distinguish exception types from one another
+-----
+
+1. the difference between the implementations/utilizations of a functor and a lambda expression. 
+   When is appropriate to use each one?
+Ans:
+   For Functor, it implements using operator() in a structure or a class.
+   this method needs to define a structure or a class first,
+   so it may be a bit complicated.
+   However, it can maintain state across multiple calls, 
+   making it suitable for more complex or stateful operations.
+   Therefore, a functor is for complex operations that need to maintain state.
+      class Add {
+         int num;
+      public:
+         Add(int x) : num(x) {}
+         int operator()(int x) const { return x * num; }
+      };
+      int main() {
+         Add sum(5);
+         int number = 5;
+         int res = sum(number);
+         std::cout << number << " add 5 is " << res << std::endl;
+         return 0;
+      }
+   
+   For Lambda, it can capture variables from the surrounding scope,
+   so it can be more concise and flexible for some simple operations.
+   Also, it is more easier to use for short and simple tasks.
+   Therefore, it is lightweight and suitable for quick and inline operations.
+      int main() {
+         auto square = [](int x) { return x * x; };
+
+         int number = 5, res = square(number);
+         std::cout << number << " square is " << res << std::endl;
+         return 0;
+      }
+
+2. the constructor for SpellChecker generates an exception in certain conditions. 
+   How would you change your code to achieve the same result, 
+   but without exceptions (both on the constructor and on the client side)? 
+   Compare the two solutions.
+Ans:
+   In my certain code as
+      SpellChecker::SpellChecker(const char* filename) {
+      std::ifstream import(filename);
+      if (!import) throw "Bad file name!";
+      for (auto i = 0u; import; ++i)
+         import >> m_badWords[i] >> m_goodWords[i];
+      }
+
+      I may change as
+      SpellChecker::SpellChecker(const char* filename) {
+      try {
+         std::ifstream import(filename);
+         if (!import) throw "Bad file name!";
+         for (auto i = 0u; import; ++i)
+            import >> m_badWords[i] >> m_goodWords[i];
+      } catch (const std::runtime_error& e) {
+         std::cerr << e.what() << std::endl;
+      } 
+      }
+      int main() {
+         try {
+            SpellChecker sc("words.txt");
+         } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+         }
+      }
+   I think if we do not use exception, then if we run this program,
+   we can only get one error but no more exceptions we can know.
+   However, if we use exception, then after we ran the program,
+   we can get most exceptions not only throw problem.
+   Therefore, if we code a complex program that 
+   will be good to code exception to catch error message we may not excepted.
+
+3. the classes Movie and Book contain almost identical logic in loading data from the file. 
+   How would you redesign the classes in order not to duplicate that logic?
+Ans:
+   There are two ways from ChatGPT that we can redesign the classes
+   3.1 Using a Base Class, when we use inheritance and base class,
+       then we can just code the logic in the base class,
+       the derive classes can just invoke the function.
+   3.2 Using a Helper Function, when we make a helper function,
+       both classes can call it,
+       then only implement once and use in many classes.
+   I think if there are many modules, 
+   then use inheritance and base class is more better than a helper function.
+
+4. the classes Movie and Book are instantiated from the main() function using a custom constructor, 
+   but they also contain a default constructor. 
+   Is the default constructor necessary? 
+   Could you remove it? Justify your answer.
+Ans:
+   The default constructors are necessary in both Movie and Book modules.
+   Therefore, we can not remove the default constructors from them
+   because of if we did not use the object without any parameter(s),
+   then the default constructor is necessary to make sure the variables are initialized correctly.
+   However, when we use the object with parameter(s) and we initialized the variables correctly,
+   then it is okay to remove the default constructors from both modules.
+   In this workshop-5, in w5_p1.cpp and w5_p2.cpp files,
+   we can see there is one line code invoke the object without any parameter as
+      seneca::Book library[7];
+   and
+      seneca::Movie movies[5];
+   these two code lines above were not with any parameter,
+   for successfully to run this workshop-5 part-1 and part-2,
+   we could not remove it.
+
+5. design and code a templated class that allocates and deallocates dynamic memory
+Ans:
+   From the Collection.h file, we can see it is a templated class.
+   It do not have the default constructor but has one customize constructor with one parameter,
+   and have one destructor.
+   Moreover, it also has one T pointer variable that 
+   we need to allocate and deallocate dynamic memory for it.
+   In the Collection.h file, I coded the operator+= function with dynamic memory allocate
+   and deallocate in destructor for the T pointer variable.
+
+6. code a member function that receives the address of a callback function to execute
+Ans:
+   In this workshop-5,
+   we coded setObserver function.
+   In w5_p2.cpp file, it has two lines code getting a callback from the Collection,
+   then trigger the two functions, bookAddedObserver and movieAddedObserver.
+   When the program execute the line(s),
+   these two functions will print the Book title and Movie information out.
+
+7. distinguish exception types from one another
+Ans: 
+   We need to implement exception in w5_p1.cpp and w5_p2.cpp files
+   and mostly I just used exception and out_of_range.
+   There are many types we can use for exceptions,
+   when we code try-catch and with cerr,
+   we can print the exceptions particularly,
+   even we can not have enough type to distinguish,
+   we can use "..." to catch the exception we don't know.
