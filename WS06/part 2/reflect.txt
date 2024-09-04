@@ -1,0 +1,87 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #6 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+- manage polymorphic objects using the vector container of the STL
+- move a dynamically allocated object into a container
+- code a range-based iteration on the objects in a container
+report and handle an exception
+-----
+
+1. Why do you need to deallocate the dynamically allocated memory in your vector of resources?
+Ans:
+   We imported and used vector to manage the resources as DIR or FILE.
+   I think the reason why I need to deallocate because of in the run-time, I made vector of resources as Dir or File.
+   Therefore, if I did not deallocate properly, it would cause memory leak.
+   And then it will make the program crush eventually.
+
+2. To call specific functions for a Directory objects stored in a Resource*, 
+   what special C++ operation did you have to do and why?
+Ans:
+   If I want to call the specific function that I need to use STATIC_CAST or DYNAMIC_CAST
+   and in this workshop part-2, I chose to use STATIC_CAST to help me changing the type from Resource* to Directory*,
+   then I can temporary cast it and use the Resource object as a Directory object to find something that I want.
+
+3. In this workshop you had to use std::vector<seneca::Resource*> 
+   to store a collection of filesystem resources as pointers. 
+   Could you have used std::vector<seneca::Resource> instead? Justify your answer!
+Ans:
+   I do not think so because of if I use std::vector<seneca::Resource>,
+   it means it can only save something in Resource not dynamically in Directory or File.
+   However, if I use std::vector<seneca::Resource*> as this workshop required,
+   Resource is a base class that inheritance by Directory and File classes,
+   and I can dynamically assign the object to Directory or File.
+
+4. code a range-based iteration on the objects in a container
+Ans:
+   In this workshop, I used it at display and operator+= functions in Directory.cpp file.
+   I coded it as 
+      void Directory::display(std::ostream& os, const std::vector<FormatFlags>& flag) const {
+         os << "Total size: " << size() << " bytes" << std::endl;
+         for (const auto& src : m_contents) {
+            os << (src->type() == NodeType::DIR ? "D | " : "F | ")
+               << std::left << std::setw(15) << src->name() << " |";
+            if (std::find(flag.begin(), flag.end(), FormatFlags::LONG) != flag.end())
+            (src->type() == NodeType::DIR) ?
+               os << "  " << std::setw(2) << src->count() << "|"
+                  << std::right << std::setw(5) << src->size() << " bytes | " << std::endl : 
+               os << "  " << std::setw(2) << "" << "|" << std::setw(5) << std::right << src->size()
+                  << std::right << " bytes | " << std::endl;
+            else os << std::endl;
+         }
+      }
+   The src is in a for loop that iteration in a m_contents.
+
+5. report and handle an exception
+Ans:
+   In this concept, I think I may used in a place,
+   like Directory::remove function.
+      void Directory::remove(const std::string& rm, const std::vector<OpFlags>& flag) {
+         auto it = std::find_if(m_contents.begin(), m_contents.end(),
+                                 [&rm](Resource* res) { return res->name() == rm; });
+
+         if (it != m_contents.end()) {
+            if ((*it)->type() == NodeType::DIR && 
+            std::find(flag.begin(), flag.end(), OpFlags::RECURSIVE) == flag.end()) {
+               throw std::invalid_argument(rm + " is a directory. Pass the recursive flag to delete directories.");
+            }
+            delete *it;
+            m_contents.erase(it);
+         } else {
+            throw std::string(rm + " does not exist in " + m_name);
+         }
+      }
+   In this case, I used std::invalid_argument to throw if there is an error,
+   then the program can report an error message.
+   But I did not use the handle exception for this workshop.
