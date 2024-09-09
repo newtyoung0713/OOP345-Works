@@ -1,0 +1,131 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #7 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+- copy data from a file into a sequential container
+- use the numeric library to accumulate data values
+- use a lambda expression to specify an operation on each value in a data set
+- use the algorithm library to sort data values
+-----
+
+1. list all the STL functions that you have used in this workshop; 
+   explain your reasoning for choosing each one, and not another.
+Ans:
+   1. std::for_each
+      This was learned in the class and I did not know another one;
+      therefore, I chose this STL function.
+   2. std::sort
+      When I used this, it is more sense about sorting the data I want.
+      Like,
+         std::sort(m_bkGood.begin(), m_bkGood.end(), [field](const BakedGood& rhs, const BakedGood& lhs) {
+            if (field == "Description") return rhs.m_desc < lhs.m_desc;
+            else if (field == "Shelf") return rhs.m_shelfLife < lhs.m_shelfLife;
+            else if (field == "Stock") return rhs.m_stock < lhs.m_stock;
+            else if (field == "Price") return rhs.m_price < lhs.m_price;
+            else throw std::invalid_argument("Invalid sort field");
+         });
+   3. std::merge
+      I used std::insert and std::sort together in combine function;
+      however, I could not sort the data after combine.
+      Thereby, I asked ChatGPT another way to solve the problem.
+   4. std::any_of
+      There is another way, std::find_if that also I can use for this workshop.
+      But these are different, find_if is checking the first matching element
+      and if the situation that I want to find the specific one.
+      any_of, is checking is there any element matches the requirment,
+      if I do not need to know the exactly element.
+      Therefore, I only need to find if the collection contains a stock,
+      then I used std::any_of
+   5. std::copy_if
+      There is no more method that can replace copy_if
+      and in this workshop was mentioned
+      that we could not use the loops unless STL functions.
+   6. std::back_inserter
+      back_inserter is the function push the element to the collection.
+      It is a better way than for with push_back and
+      also, I cannot use for loop.
+
+2. present the advantages of using STL algorithms vs. implementing the functionality by yourself using loops.
+Ans:
+   I think the advantages are using STL algorithms is the way more simple.
+   But if using loops manually, the code in this program will be much and probably hard to understand.
+   The STL algorithms are many powerful and clean functions.
+   Like in STL algorithm may need to code one line,
+   but compared with for-loop, for-loop may need to code a lot,
+   so using algorithm will make the code in the program easy to maintain.
+   Like, 
+      for-loop:
+         int totalStock = 0;
+         double totalPrice = 0.0;
+         for (const auto& bg : m_bkGood) {
+            os << bg << std::endl;
+            totalStock += bg.m_stock;
+            totalPrice += bg.m_price;
+         }
+         os << "Total Stock: " << totalStock << "\nTotal Price: " << totalPrice << std::endl;
+      
+      STL algorithm:
+         int totalStock = std::accumulate(m_bkGood.begin(), m_bkGood.end(), 0, 
+                        [&](const BakedGood& bg) { return totalStock += bg.m_stock; });
+         double totalPrice = std::accumulate(m_bkGood.begin(), m_bkGood.end(), 0.0, 
+                              [&](const BakedGood& bg) { return totalPrice += bg.m_price; });
+         std::for_each(m_bkGood.begin(), m_bkGood.end(), [&](const BakedGood& bg) { os << bg << std::endl; });
+         os << "Total Stock: " << totalStock << "\nTotal Price: " << totalPrice << std::endl;
+
+3. for the sortBakery function, would anything differ in how it is implemented 
+   if the choice of collection was either a vector or a list? 
+   If there is a difference what is it?
+Ans:
+   It will be a slightly different between a vector and a list
+   vector:
+      std::sort(m_bkGood.begin(), m_bkGood.end(), [field](const BakedGood& rhs, const BakedGood& lhs) {
+         if (field == "Description") return rhs.m_desc < lhs.m_desc;
+         else if (field == "Shelf") return rhs.m_shelfLife < lhs.m_shelfLife;
+         else if (field == "Stock") return rhs.m_stock < lhs.m_stock;
+         else if (field == "Price") return rhs.m_price < lhs.m_price;
+         else throw std::invalid_argument("Invalid sort field");
+      });
+
+   list:
+      m_bkGood.sort(m_bkGood.begin(), m_bkGood.end(), [field](const BakedGood& rhs, const BakedGood& lhs) {
+         if (field == "Description") return rhs.m_desc < lhs.m_desc;
+         else if (field == "Shelf") return rhs.m_shelfLife < lhs.m_shelfLife;
+         else if (field == "Stock") return rhs.m_stock < lhs.m_stock;
+         else if (field == "Price") return rhs.m_price < lhs.m_price;
+         else throw std::invalid_argument("Invalid sort field");
+      });
+   
+   However, both ways are different.
+   vector, is for when we need fast random access and where sorting is required.
+   list, is for when we need efficent insertions and deletions in the middle of the container,
+         and can work with a more complex sort operation.
+
+4. copy data from a file into a sequential container
+Ans:
+      std::ifstream import(src);
+      std::string temp{};
+      if (!import) throw std::runtime_error("Cannot open file: " + src);
+      while (std::getline(import, temp)) {
+         BakedGood bg{};
+         bg.m_type = (trim(temp.substr(0, 8), ' ') == "Bread") ? BakedType::BREAD : BakedType::PASTERY;
+         bg.m_desc = trim(temp.substr(8, 20), ' ');
+         bg.m_shelfLife = std::stoi(trim(temp.substr(28, 14), ' '));
+         bg.m_stock = std::stoi(trim(temp.substr(42, 8), ' '));
+         bg.m_price = std::stod(trim(temp.substr(50, 6), ' '));
+         // After extraction, put data into BakedGood
+         m_bkGood.push_back(bg);
+      }
+   From my code in with one parameter of constructor,
+   I used the structure to extract the data from file,
+   after extraction, I assigned the data to the class of BakedGood attribute with push_back.
