@@ -1,0 +1,84 @@
+///////////////////////////////////////////////////////////////////////////
+                              Reflection
+                          Workshop - #8 (P2)
+Full Name  : Sheng-Lin Yang
+Student ID#: 160443222
+Email      : syang153myseneca.ca
+Section    : NDD
+
+Authenticity Declaration:
+I declare this submission is the result of my own work and has not been
+shared with any other student or 3rd party content provider. This submitted
+piece of work is entirely of my own creation.
+///////////////////////////////////////////////////////////////////////////
+
+----- Learning Outcomes
+(Unnecessary) create a program component of quadratic complexity
+use a smart pointer to move an object
+-----
+
+1. why could we not use a unique_ptr in your Database class?
+Ans:
+   After I changed the keyword from shared_ptr to unique_ptr
+   I got this message for Database.h from Xcode:
+      Call to implicitly-deleted copy constructor of 'std::unique_ptr<Database<string>>'
+   Therefore, I guess probably I need to make a copy operations even with delete keyword,
+   otherwise, it will not work properly.
+   And I got the message for w8_p2.cpp from Xcode as well:
+      Object backing the pointer will be destroyed at the end of the full-expression
+   I think this point is about after the code changes the object from std::string to long long,
+   it will free the memory, but the program is still need it,
+   thereby the program shows the caution message.
+
+   Also, I think another reasons are about:
+   1. The pointer is not only for one type
+   2. There are two types need to share the same object.
+      In the w8_p2.cpp, the getInstance will use long long,
+      or std::string and assign to auto db.
+   3. If uses unique_ptr that we have to check the ownership,
+      and cannot be copy operations only move operations;
+      however, if uses shared_ptr, it can share the ownership.
+      And will lease the last shared_ptr after out of working.
+
+2. what changes you had to make in part 1 to transform the class into a templated one?
+Ans:
+   From part 1, the GetValue and SetValue functions would receive the datatype std::string;
+   however, in part 2, the datatype was not only std::string also had long long.
+   If I did not transform the class into a template,
+   then it could not compile.
+   Also, in part 2, there was one function named encryptDecrypt, with a typename T of template.
+   And this one should use template to implement.
+   After specialized the encryptDecrypt, we used std::string and long long for it,
+   I think that was also a change for me to use template.
+
+3. a class that allows only one instance to be created is called a singleton. 
+   Can you think at another way to create a singleton without using static members? 
+   How would that object be managed?
+Ans:
+   Maybe we can use the way like External Manager.
+   If using External Manager, from ChatGPT, it provides a service container.
+   Using std::unordered_map with unique_ptr to manager the case.
+   Because unique_ptr can make it sure that the program has the only ownership,
+   and will not have to share with other.
+
+4. the class Database has a resource attribute (the database instance), 
+   yet no copy/move operations were implemented. 
+   Is that a bug (justify your answer)?
+Ans:
+   In my idea, I do not think that is a bug for the workshop,
+   since we used smart pointer for this workshop,
+   and we did use shared_ptr to share to object type
+   later on just assigned the content to another shared_ptr;
+   therefore, it is unnecessary to use copy/move operations in this workshop.
+
+5. we said that the class Database can be instantiated only once, 
+   yet in the output we see 
+   that the custom constructor is called twice (same for the destructor). Explain.
+Ans:
+   In general situation, this workshop will follow the role,
+   and the class Database can only instantiated once.
+   In this workshop, we do have two files to implement and to execute.
+   There were two parameters with different types,
+   and the output was also had two version.
+   I think that because of two files with two types,
+   and called the class Database cause it instantiated twice not only once.
